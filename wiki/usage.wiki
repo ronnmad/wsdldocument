@@ -1,0 +1,4 @@
+{{{
+$wsdl = new WSDLDocument( "MyClassName", "http://server.handler" );
+echo $wsdl->saveXml();
+}}}
