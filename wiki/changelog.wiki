@@ -1,8 +1,6 @@
 #labels Phase-Implementation
 = 0.2 =
 
-_not released yet_
-
   * Add documentation tags for class and methods/operations
   * Allowed array of array for native and complex type (thanks [http://www.diogomoreira.com Diogo Moreira])
 
