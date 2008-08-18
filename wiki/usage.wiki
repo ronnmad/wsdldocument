@@ -1,4 +1,47 @@
+= Generation =
+
 {{{
-$wsdl = new WSDLDocument( "MyClassName", "http://server.handler" );
+$wsdl = new WSDLDocument( "MyClass", "http://server.handler" );
 echo $wsdl->saveXml();
+}}}
+
+= Preparing Classes =
+
+{{{
+
+/**
+ * Service class documentation.
+ */
+class MyClass
+{
+
+    /**
+     * Method documentation.
+     *
+     * @param string
+     * @param MyStruct it works with complex types, see above how to prepare a complex class
+     * @param integer[] simple array of integer
+     * @param float[][][] array of array of array of float
+     * @param boolean
+     * @return MyStruct[] array of MyStruct Class
+     */
+    public function justSample(){}
+
+}
+
+class MyStruct
+{
+
+    /**
+     * @var string
+     */
+    public $name;
+
+
+    /**
+     * @var integer
+     */
+    public $postalCode;
+
+}
 }}}
