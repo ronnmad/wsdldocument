@@ -1,14 +1,23 @@
-= Generation =
+== Generation ==
 
 {{{
 $wsdl = new WSDLDocument( "MyClass", "http://server.handler" );
 echo $wsdl->saveXml();
 }}}
 
-= Preparing Classes =
+The first argument is the name of the service class. If you are using SOA in your application it will be easy, otherwise this is a good time to start.
+
+The second argument is the url of webservices request handler. You have to prepare you application to accept a SOAP request.
+
+Before to try to generate the WSDL you must document the classes. See next section.
+
+== Preparing Classes ==
+
+=== Service Class ===
+
+You have to save the type of return and arguments. You can do it using "@param" and "@return" tag comments.
 
 {{{
-
 /**
  * Service class documentation.
  */
@@ -28,7 +37,13 @@ class MyClass
     public function justSample(){}
 
 }
+}}}
 
+=== Complex Type Class ===
+
+Like services you can use the tag "@var" to specific the type of property.
+
+{{{
 class MyStruct
 {
 
@@ -37,11 +52,10 @@ class MyStruct
      */
     public $name;
 
-
     /**
-     * @var integer
+     * @var integer[]
      */
-    public $postalCode;
+    public $anotherProperty;
 
 }
 }}}
