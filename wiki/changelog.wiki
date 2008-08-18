@@ -1,7 +1,4 @@
 #labels Phase-Implementation
-= changelog =
-
-----
 == 0.2 ==
 
 _not released yet_
@@ -13,6 +10,7 @@ _not released yet_
   * Fixed bug: non public or static properties of complex types could not go to WSDL
 
 ----
+
 == 0.1 ==
 
   * first release
