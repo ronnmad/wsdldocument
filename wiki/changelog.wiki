@@ -1,0 +1,18 @@
+#labels Phase-Implementation
+= changelog =
+
+----
+== 0.2 ==
+
+_not released yet_
+
+  * Add documentation tags for class and methods/operations
+  * Allowed array of array for native and complex type (thanks [http://www.diogomoreira.com Diogo Moreira])
+
+  * Fixed bug: non public, static, constructor or magic methods could not go to WSDL
+  * Fixed bug: non public or static properties of complex types could not go to WSDL
+
+----
+== 0.1 ==
+
+  * first release
