@@ -1,5 +1,5 @@
 #labels Phase-Implementation
-== 0.2 ==
+= 0.2 =
 
 _not released yet_
 
@@ -11,6 +11,6 @@ _not released yet_
 
 ----
 
-== 0.1 ==
+= 0.1 =
 
   * first release
