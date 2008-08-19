@@ -1,4 +1,4 @@
-#labels Phase-Implementation
+#labels Phase-Implementation,Featured
 = 0.2 =
 
   * Add documentation tags for class and methods/operations
