@@ -1,11 +1,18 @@
 #labels Phase-Implementation,Featured
+= 0.3 =
+
+  * added native PHP array type. You may use "array" or "struct" to use this type. The WSDL generated uses [http://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383522 soap-enc:Array] definition.
+  * second argument WSDLDocument's constructor is not required. The default value of Soap Action URL is the current without parameters.
+
+----
+
 = 0.2 =
 
-  * Added documentation tags for class and methods/operations
-  * Allowed array of array for native and complex type (thanks [http://www.diogomoreira.com Diogo Moreira])
+  * added documentation tags for class and methods/operations
+  * allowed array of array for native and complex type (thanks [http://www.diogomoreira.com Diogo Moreira])
 
-  * Fixed bug: non public, static, constructor or magic methods could not go to WSDL
-  * Fixed bug: non public or static properties of complex types could not go to WSDL
+  * fixed bug: non public, static, constructor or magic methods could not go to WSDL
+  * fixed bug: non public or static properties of complex types could not go to WSDL
 
 ----
 
