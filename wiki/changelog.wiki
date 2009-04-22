@@ -1,4 +1,11 @@
 #labels Phase-Implementation,Featured
+= 0.4 =
+
+  * added an extra check to verify declared and documented method arguments quantity.
+
+  * fixed bug for array of native types, it was generating native type instead of array of native. (thanks Herbert Souza)
+
+----
 = 0.3 =
 
   * added native PHP array type. You may use "array" or "struct" to use this type. The WSDL generated uses [http://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383522 soap-enc:Array] definition.
