@@ -1,25 +1,32 @@
 #labels Phase-Implementation,Featured
-= 0.4 =
+= 0.5 =
 
-  * added an extra check to verify declared and documented method arguments quantity.
-
-  * fixed bug for array of native types, it was generating native type instead of array of native. (thanks Herbert Souza)
+  * fixed: Missing type definition for objects in arrays (thanks Schirkan)
+  * fixed: Native array, e.g. "string[]" would be translated into "tns:string[]" - should be "xsd:string[]" (thanks Magnus Pienkny)
+  * fixed: Duplicated port in soapAction in some cases
 
 ----
+
+= 0.4 =
+
+  * Added an extra check to verify declared and documented method arguments quantity.
+  * fixed: Array of native types, it was generating native type instead of native array. (thanks Herbert Souza)
+
+----
+
 = 0.3 =
 
-  * added native PHP array type. You may use "array" or "struct" to use this type. The WSDL generated uses [http://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383522 soap-enc:Array] definition.
-  * second argument WSDLDocument's constructor is not required. The default value of Soap Action URL is the current without parameters.
+  * Added native PHP array type. You may use "array" or "struct" to use this type. The WSDL generated uses [http://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383522 soap-enc:Array] definition.
+  * Second argument WSDLDocument's constructor is not required. The default value of Soap Action URL is the current without parameters.
 
 ----
 
 = 0.2 =
 
-  * added documentation tags for class and methods/operations
-  * allowed array of array for native and complex type (thanks [http://www.diogomoreira.com Diogo Moreira])
-
-  * fixed bug: non public, static, constructor or magic methods could not go to WSDL
-  * fixed bug: non public or static properties of complex types could not go to WSDL
+  * Added documentation tags for class and methods/operations
+  * Allowed array of array for native and complex type (thanks Diogo Moreira)
+  * fixed: Non public, static, constructor or magic methods could not go to WSDL
+  * fixed: Non public or static properties of complex types could not go to WSDL
 
 ----
 
