@@ -360,6 +360,7 @@ class WSDLDocument extends DOMDocument
             $sType = substr( $sType, 0, -2 );
         }
         # create complex type if necessary
+        $sType      = $this->getType($sType);
         $sNamespace = $this->getTypeNamespace($sType);
         if ( $sNamespace == "tns" )
         {
@@ -511,6 +512,37 @@ class WSDLDocument extends DOMDocument
     }
 
     /**
+     * Get type name.
+     *
+     * @param string
+     * @return string
+     */
+    protected function getType($sType)
+    {
+        switch ( $sType )
+        {
+            case "array":
+            case "struct":
+                return "Array";
+            case "boolean":
+            case "bool":
+                return "boolean";
+            case "double":
+            case "float":
+            case "real":
+                return "float";
+            case "integer":
+            case "int":
+                return "int";
+            case "string":
+            case "str":
+                return "string";
+            default:
+                return "tns";
+        }
+    }
+
+    /**
      * Get type namespace.
      *
      * @param string
@@ -525,6 +557,7 @@ class WSDLDocument extends DOMDocument
                 return "soap-enc";
             case "boolean":
             case "bool":
+            case "double":
             case "float":
             case "real":
             case "integer":
