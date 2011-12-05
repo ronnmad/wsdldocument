@@ -16,7 +16,7 @@ class Primes
 
 // ----- USAGE
 
-require '../WSDLDocument.php';
+require '../src/WSDLDocument.php';
 $wsdl = new WSDLDocument('Primes');
 header('Content-Type: text/xml');
 echo $wsdl->saveXML();

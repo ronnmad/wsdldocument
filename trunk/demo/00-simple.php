@@ -24,7 +24,7 @@ class Math
 
 // ----- USAGE
 
-require '../WSDLDocument.php';
+require '../src/WSDLDocument.php';
 $wsdl = new WSDLDocument('Math');
 header('Content-Type: text/xml');
 echo $wsdl->saveXML();
