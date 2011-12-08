@@ -22,6 +22,16 @@ class WSDLDocument extends DOMDocument
     /**#@-*/
 
     /**
+     * List of types already created or in creating proccess. It avoids
+     * recursion when creating complex types that reference themselves. See
+     * WSDLDocument::themselves() operation for more details
+     *
+     *
+     * @var string[]
+     */
+    protected $aCreatedTypes = array();
+
+    /**
      * @var DOMElement
      */
     protected $oBinding;
@@ -184,37 +194,37 @@ class WSDLDocument extends DOMDocument
     protected function createComplexType($sClass)
     {
         // check if it was created
-        static $aCache = array();
-        if (array_key_exists($sClass, $aCache) == false) {
-            // mark it as created to avoid twice creation and recursion between complex types
-            $aCache[$sClass] = true;
-            // start type creation
-            $oComplex = $this->createElementNS(self::NS_XSD, 'complexType');
-            $this->oSchema->appendChild($oComplex);
-            $oComplex->setAttribute('name', $sClass);
-            $oAll = $this->createElementNS(self::NS_XSD, 'all');
-            $oComplex->appendChild($oAll);
-            // create attributes
-            $oReflection = new ReflectionClass($sClass);
-            $aProperty = $oReflection->getProperties(ReflectionProperty::IS_PUBLIC);
-            foreach ($oReflection->getProperties() as $oProperty) {
-                // check if property is allowed
-                if (
-                    $oProperty->isPublic() == true && // it must be public and...
-                    $oProperty->isStatic() == false // non static
-                ) {
-                    // create type for each element
-                    $sComment = $oProperty->getDocComment();
-                    $sType = reset($this->getTagComment($sComment, 'var'));
-                    $sPropertyTypeId = $this->createType($sType);
-                    // create element of property
-                    $oElement = $this->createElementNS(self::NS_XSD, 'element');
-                    $oAll->appendChild($oElement);
-                    $oElement->setAttribute('name', $oProperty->name);
-                    $oElement->setAttribute('type', $sPropertyTypeId);
-                    $oElement->setAttribute('minOccurs', 0);
-                    $oElement->setAttribute('maxOccurs', 1);
-                }
+        if (array_key_exists($sClass, $this->aCreatedTypes)) {
+            return;
+        }
+        // mark it as created to avoid twice creation and recursion between complex types
+        $this->aCreatedTypes[$sClass] = true;
+        // start type creation
+        $oComplex = $this->createElementNS(self::NS_XSD, 'complexType');
+        $this->oSchema->appendChild($oComplex);
+        $oComplex->setAttribute('name', $sClass);
+        $oAll = $this->createElementNS(self::NS_XSD, 'all');
+        $oComplex->appendChild($oAll);
+        // create attributes
+        $oReflection = new ReflectionClass($sClass);
+        $aProperty = $oReflection->getProperties(ReflectionProperty::IS_PUBLIC);
+        foreach ($oReflection->getProperties() as $oProperty) {
+            // check if property is allowed
+            if (
+                $oProperty->isPublic() == true && // it must be public and...
+                $oProperty->isStatic() == false // non static
+            ) {
+                // create type for each element
+                $sComment = $oProperty->getDocComment();
+                $sType = reset($this->getTagComment($sComment, 'var'));
+                $sPropertyTypeId = $this->createType($sType);
+                // create element of property
+                $oElement = $this->createElementNS(self::NS_XSD, 'element');
+                $oAll->appendChild($oElement);
+                $oElement->setAttribute('name', $oProperty->name);
+                $oElement->setAttribute('type', $sPropertyTypeId);
+                $oElement->setAttribute('minOccurs', 0);
+                $oElement->setAttribute('maxOccurs', 1);
             }
         }
     }
