@@ -24,8 +24,8 @@ class WSDLDocument extends DOMDocument
     /**
      * List of types already created or in creating proccess. It avoids
      * recursion when creating complex types that reference themselves. See
-     * WSDLDocument::themselves() operation for more details
-     *
+     * {@link WSDLDocument::createComplexType()} and
+     * {@link WSDLDocument::createArrayType()} operations for more details.
      *
      * @var string[]
      */
@@ -77,14 +77,12 @@ class WSDLDocument extends DOMDocument
     public function __construct($sClass, $sUrl = null, $sTns = null)
     {
         parent::__construct('1.0');
-        // set class
+        // set class, url and target namespace
         $this->oClass = new ReflectionClass($sClass);
-        // set url
         $this->sUrl = empty($sUrl) == true ? $this->getDefaultUrl() : $sUrl;
-        // set target name space
         $this->sTns = empty($sTns) == true ? $_SERVER['SERVER_NAME'] : $sTns;
         // create document
-        $this->checkIt();
+        $this->run();
     }
 
     /**
@@ -92,11 +90,11 @@ class WSDLDocument extends DOMDocument
      *
      * @return void
      */
-    protected function checkIt()
+    protected function run()
     {
         // create root, schema type, port type and binding tags
-        $this->startDocument();
-        // walk operations
+        $this->createMajorElements();
+        // add methods
         foreach ($this->oClass->getMethods() as $oMethod) {
             // check if method is allowed
             if (
@@ -105,11 +103,9 @@ class WSDLDocument extends DOMDocument
                 $oMethod->isConstructor() == false && // non constructor
                 substr($oMethod->name, 0, 2) != '__' // non magic methods
             ) {
-                // port type operation
+                // attach operation
                 $this->createPortTypeOperation($oMethod);
-                // binding operation
                 $this->createBindingOperation($oMethod);
-                // message
                 $this->createMessage($oMethod);
             }
         }
@@ -122,7 +118,7 @@ class WSDLDocument extends DOMDocument
 
     /**
      * Create array type once. It doesn't create a type, you have to call
-     * {@link Wsdl::_createType()} to this. Returns the array type name.
+     * {@link WSDLDocument::createType()} to this. Returns the array type name.
      *
      * @param  string
      * @return string
@@ -130,29 +126,29 @@ class WSDLDocument extends DOMDocument
     protected function createArrayType($sType)
     {
         // check if it was created
-        static $aCache = array();
         $sName = $sType . 'Array';
-        if (array_key_exists($sType, $aCache) == false) {
-            // mark it as created to avoid duplication
-            $aCache[$sType] = true;
-            // create tags
-            $oType = $this->createElementNS(self::NS_XSD, 'complexType');
-            $this->oSchema->appendChild($oType);
-            $oContent = $this->createElementNS(self::NS_XSD, 'complexContent');
-            $oType->appendChild($oContent);
-            $oRestriction = $this->createElementNS(self::NS_XSD, 'restriction');
-            $oContent->appendChild($oRestriction);
-            $oAttribute = $this->createElementNS(self::NS_XSD, 'attribute');
-            $oRestriction->appendChild($oAttribute);
-            // configure tags
-            $oType->setAttribute('name', $sName);
-            $oRestriction->setAttribute('base', 'soap-enc:Array');
-            $oAttribute->setAttribute('ref', 'soap-enc:arrayType');
-            // build name
-            $sNamespace = $this->getTypeNamespace($sType);
-            $sArrayType = $sNamespace . ':' . $sType . '[]';
-            $oAttribute->setAttributeNS(self::NS_WSDL, 'arrayType', $sArrayType);
+        if (array_key_exists($sType, $this->aCreatedTypes) == true) {
+            return $sName;
         }
+        // avoid recursion
+        $this->aCreatedTypes[$sType] = true;
+        // create tags
+        $oType = $this->createElementNS(self::NS_XSD, 'complexType');
+        $this->oSchema->appendChild($oType);
+        $oContent = $this->createElementNS(self::NS_XSD, 'complexContent');
+        $oType->appendChild($oContent);
+        $oRestriction = $this->createElementNS(self::NS_XSD, 'restriction');
+        $oContent->appendChild($oRestriction);
+        $oAttribute = $this->createElementNS(self::NS_XSD, 'attribute');
+        $oRestriction->appendChild($oAttribute);
+        // configure tags
+        $oType->setAttribute('name', $sName);
+        $oRestriction->setAttribute('base', 'soap-enc:Array');
+        $oAttribute->setAttribute('ref', 'soap-enc:arrayType');
+        // build name
+        $sNamespace = $this->getTypeNamespace($sType);
+        $sArrayType = $sNamespace . ':' . $sType . '[]';
+        $oAttribute->setAttributeNS(self::NS_WSDL, 'arrayType', $sArrayType);
         return $sName;
     }
 
@@ -187,17 +183,17 @@ class WSDLDocument extends DOMDocument
 
     /**
      * Create a complex type once. It doesn't create a type, you have to call
-     * {@link Wsdl::_createType()} to this.
+     * {@link WSDLDocument::createType()} to this.
      *
      * @return void
      */
     protected function createComplexType($sClass)
     {
         // check if it was created
-        if (array_key_exists($sClass, $this->aCreatedTypes)) {
+        if (array_key_exists($sClass, $this->aCreatedTypes) == true) {
             return;
         }
-        // mark it as created to avoid twice creation and recursion between complex types
+        // avoid recursion
         $this->aCreatedTypes[$sClass] = true;
         // start type creation
         $oComplex = $this->createElementNS(self::NS_XSD, 'complexType');
@@ -285,11 +281,11 @@ class WSDLDocument extends DOMDocument
         $sDoc = $this->getDocComment($oMethod->getDocComment());
         $oDoc = $this->createElementNS(self::NS_WSDL, 'documentation', $sDoc);
         $oOperation->appendChild($oDoc);
-        // port type operation input
+        // input
         $oInput = $this->createElementNS(self::NS_WSDL, 'input');
         $oInput->setAttribute('message', 'tns:' . $oMethod->name . 'Request');
         $oOperation->appendChild($oInput);
-        // port type operation output
+        // output
         $oOutput = $this->createElementNS(self::NS_WSDL, 'output');
         $oOutput->setAttribute('message', 'tns:' . $oMethod->name . 'Response');
         $oOperation->appendChild($oOutput);
@@ -450,9 +446,9 @@ class WSDLDocument extends DOMDocument
      *
      * @return void
      */
-    protected function startDocument()
+    protected function createMajorElements()
     {
-        // root tag
+        // >> definitions
         $this->oDefinitions = $this->createElementNS(self::NS_WSDL, 'wsdl:definitions');
         $this->oDefinitions->setAttributeNS(self::NS_XML, 'xmlns:soap-enc', self::NS_SOAP_ENC);
         $this->oDefinitions->setAttributeNS(self::NS_XML, 'xmlns:soap-env', self::NS_SOAP_ENV);
@@ -461,25 +457,21 @@ class WSDLDocument extends DOMDocument
         $this->oDefinitions->setAttributeNS(self::NS_XML, 'xmlns:xsd', self::NS_XSD);
         $this->oDefinitions->setAttribute('targetNamespace', $this->sTns);
         $this->appendChild($this->oDefinitions);
-        // types
+        // >> definitions >> types
         $oTypes = $this->createElementNS(self::NS_WSDL, 'types');
         $this->oDefinitions->appendChild($oTypes);
-        // schema
+        // >> definitions >> types >> schema
         $this->oSchema = $this->createElementNS(self::NS_XSD, 'schema');
         $this->oSchema->setAttribute('targetNamespace', $this->sTns);
         $oTypes->appendChild($this->oSchema);
-        // port type
-        // it must be append in root after methods walking
-        // see WSDLDocument::discovery()
+        // >> definitions >> types >>port type
         $this->oPortType = $this->createElementNS(self::NS_WSDL, 'portType');
         $this->oPortType->setAttribute('name', $this->oClass->name . 'PortType');
-        // binding
-        // it must be append in root after methods walking
-        // see WSDLDocument::discovery()
+        // >> definitions >> types >> binding
         $this->oBinding = $this->createElementNS(self::NS_WSDL, 'binding');
         $this->oBinding->setAttribute('name', $this->oClass->name . 'Binding');
         $this->oBinding->setAttribute('type', 'tns:' . $this->oClass->name . 'PortType');
-        // soap binding
+        // >> definitions >> types >> binding >> soap binding
         $oBindingSoap = $this->createElementNS(self::NS_SOAP_ENV, 'binding');
         $oBindingSoap->setAttribute('style', 'rpc');
         $oBindingSoap->setAttribute('transport', self::BINDING);
