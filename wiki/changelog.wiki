@@ -1,4 +1,13 @@
 #labels Phase-Implementation,Featured
+= 0.6 =
+
+  * fixed: complex type missing when referenced twice in a script
+  * fixed: Missing Array types, in revision 22 (thanks jkufner)
+  * force utf-8 encoding in DOMDocument
+
+----
+
+
 = 0.5 =
 
   * fixed: Missing type definition for objects in arrays (thanks Schirkan)
