@@ -12,6 +12,13 @@ class Primes
      * @return integer[]
      */
     public function find($limit){}
+
+    /**
+     * @param  integer
+     * @param  integer
+     * @return array
+     */
+    public function set($from, $to){}
 }
 
 // ----- USAGE

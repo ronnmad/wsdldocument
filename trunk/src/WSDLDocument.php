@@ -489,7 +489,7 @@ class WSDLDocument extends DOMDocument
         switch ($sType) {
             case 'array':
             case 'struct':
-                return 'Array';
+                return 'array';
             case 'boolean':
             case 'bool':
                 return 'boolean';
