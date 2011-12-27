@@ -9,4 +9,4 @@ INSTALLATION & GETTING STARTED
 ------------------------------
 
 Application must include WSDLDocument.php
-See sample directory.
+See demo directory.
