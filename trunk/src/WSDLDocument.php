@@ -76,7 +76,7 @@ class WSDLDocument extends DOMDocument
      */
     public function __construct($sClass, $sUrl = null, $sTns = null)
     {
-        parent::__construct('1.0');
+        parent::__construct('1.0', 'utf-8');
         // set class, url and target namespace
         $this->oClass = new ReflectionClass($sClass);
         $this->sUrl = empty($sUrl) == true ? $this->getDefaultUrl() : $sUrl;
